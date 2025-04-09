@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import io
-import base64
+
 
 # Título de la aplicación
 # Configuramos la página
@@ -12,33 +12,13 @@ st.set_page_config(
     )
 
 
-# Convertir imagen a base64
-def get_image_as_base64(path):
-    with open(path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-# Convertimos la imagen
-img_base64 = get_image_as_base64("imgs/CAME-Transparente.png")
-
-# Creamos las columnas
-colll1, colll2 = st.columns([2, 1])
-
-with colll1:
-    st.markdown(
-        "<h1 style='text-align: left; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>",
-        unsafe_allow_html=True
-    )
-
-with colll2:
-    st.markdown(
-        f"""
-        <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-            <img src="data:image/png;base64,{img_base64}" style="max-width: 100%; height: auto;">
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+columna_titulo, columna_logo = st.columns([2,1])
+with columna_titulo:
+    # Aplicar estilos de formato CSS para agrandar el título
+    st.markdown("<h1 style='text-align: left; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
+with columna_logo:
+    st.write("")
+    st.image("imgs/CAME-Transparente.png", use_container_width=True)
     
 st.write("#### De acuerdo a la [resolución 04/2025](https://www.argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025.pdf)")
 
