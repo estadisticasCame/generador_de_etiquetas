@@ -15,7 +15,7 @@ st.set_page_config(
 columna_titulo, columna_logo = st.columns([2,1])
 with columna_titulo:
     # Aplicar estilos de formato CSS para agrandar el título
-    st.markdown("<h1 style='text-align: left; font-size: 50px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: left; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
 with columna_logo:
     st.write("")
     st.write("")
