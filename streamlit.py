@@ -1,0 +1,351 @@
+import streamlit as st
+from PIL import Image, ImageDraw, ImageFont
+import io
+import barcode
+from barcode.writer import ImageWriter
+import streamlit as st
+import barcode
+from barcode.writer import ImageWriter
+from io import BytesIO
+import qrcode
+import io
+import json
+
+# Título de la aplicación
+# Configuramos la página
+st.set_page_config(
+    page_title="Generador de Etiquetas",
+    page_icon="imgs/CAME-Transparente.ico.ico",
+    )
+
+# Aplicar estilos de formato CSS para agrandar el título
+st.markdown("<h1 style='text-align: center; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
+
+
+
+st.write("---")
+
+
+st.write("De acuerdo a la [resolución 4/2025](https://www.argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025.pdf)")
+st.write("+ Si usted comercializa productos de consumo general (electrodomésticos, ropa, alimentos procesados, etc.), le corresponde el **21% de IVA**.")
+st.write("+ Si comercializa productos agropecuarios, carnes frescas, pan o frutas y verduras sin procesar, le corresponde el **10,5% de IVA.**")
+st.write("+ Ciertos productos, como libros, folletos, diarios, están exentos de IVA")
+
+st.write("---")
+def draw_wrapped_text(draw= None, text= None, font= None, max_width = 235, x = 30, y = 25+8, fill = None):
+    lines = []
+    words = text.split()
+    line = ""
+
+    for word in words:
+        test_line = line + " " + word if line else word
+        bbox = draw.textbbox((0, 0), test_line, font=font)
+        text_width = bbox[2] - bbox[0]
+
+        if text_width <= max_width:
+            line = test_line
+        else:
+            lines.append(line)
+            line = word
+    if line:
+        lines.append(line)
+
+    # Dibujar las líneas en la imagen
+    for i, l in enumerate(lines):
+        bbox = draw.textbbox((0, 0), l, font=font)
+        line_height = bbox[3] - bbox[1]
+        draw.text((x, y + i * (line_height + 9)), l, font=font, fill=fill)
+
+# def generar_qr(texto, tamanio=(110, 110)):
+#         # Crear código QR
+#         qr = qrcode.QRCode(
+#             version=1,
+#             error_correction=qrcode.constants.ERROR_CORRECT_L,
+#             box_size=10,
+#             border=4,
+#         )
+#         qr.add_data(texto)
+#         qr.make(fit=True)
+        
+#         # Guardar en un buffer
+#         img = qr.make_image(fill_color="black", back_color="white",background=None)    
+#         buffer = io.BytesIO()
+#         img.save(buffer, format="PNG")
+#         buffer.seek(0)
+        
+#         # Redimensionar y retornar imagen PIL
+#         imagen = Image.open(buffer)
+#         imagen = imagen.resize(tamanio)
+#         return imagen
+
+
+# Personalización en sidebar
+# with st.sidebar:
+#     st.header("Configuración de tamaño")
+#     tamaño = st.slider("Tamaño", 1, 5, 1)
+
+# Entrada de precio final y selección de IVA
+col1, col2 = st.columns([2, 1])
+with col1:
+    producto = st.text_input("Producto", "")
+    precio_final = st.text_input("Precio Final del Producto", value="$")
+    # Se formatea el valor ingresado
+    precio_final_procesado = precio_final.strip()
+    precio_final_procesado = precio_final_procesado.replace("$", "").replace(".","").replace(",,",",").replace(",",".")  
+with col2:
+    iva = st.selectbox("IVA", ["21%", "10.5%", "Exento"])
+    dividir_por_litro_o_kg = st.selectbox("Unidad", ["Sin unidades", "Kilogramos", "Litros"])
+    if dividir_por_litro_o_kg != "Sin unidades":
+        cantidad =st.number_input("Cantidad", min_value=0.1, value=1.00,  format="%.2f")
+      
+
+# Validar si el precio final es un número válido
+try:
+    precio_final_float = float(precio_final_procesado)
+    precio_valido = True
+except ValueError:
+    precio_valido = False
+
+st.write("---")
+# Mostrar preview de la imagen si el precio es válido
+if precio_valido:
+    color1,color2,color3,color4,color5 = st.columns(5)
+    # Configuración de colores
+    with color1:
+        color_texto = st.color_picker("Texto", "#000000")
+    with color2:
+        color_fondo_superior = st.color_picker("Fondo Superior", "#F5F5F5")
+    with color3:    
+        color_fondo_inferior = st.color_picker("Fondo Inferior", "#FFFFFF")
+    with color4:
+        color_borde_interior = st.color_picker("Borde Interior", "#000000")
+    with color5:
+        color_borde_exterior = st.color_picker("Borde Exterior", "#FFFFFF")
+
+ 
+    # Calcular precio sin IVA y precio por litro
+    if iva == "21%":
+        precio_sin_iva = precio_final_float / 1.21
+    elif iva == "10.5%":
+        precio_sin_iva = precio_final_float / 1.105
+    else:  # Exento
+        precio_sin_iva = precio_final_float
+
+    # SI TIENE KG O L
+    if dividir_por_litro_o_kg != "Sin unidades":
+        precio_cantidad = precio_final_float / cantidad
+    else: precio_cantidad = 0
+
+    # Creamos lista de variables
+    lista_variables = [ precio_final_float, precio_sin_iva, precio_cantidad]
+        
+    # iteramos para el formato
+    for i in range (len(lista_variables)) :
+        lista_variables[i] = '{:,.2f}'.format(lista_variables[i]).replace(',', ' ')
+        lista_variables[i] = lista_variables[i].replace(".",",")
+        lista_variables[i] = lista_variables[i].replace(" ",".")
+
+    # Crear imagen
+    img = Image.new("RGB", (720, 300), color=color_fondo_superior)
+    draw = ImageDraw.Draw(img)
+
+    # Dibujar fondo inferior
+    draw.rectangle([0, 190, 720, 300], fill=color_fondo_inferior)
+
+    # Fuentes
+    font_large = ImageFont.truetype("arial.ttf", 45)
+    font_medium = ImageFont.truetype("arial.ttf", 24)
+    font_small = ImageFont.truetype("arial.ttf", 16)
+    
+    # Dibujar texto
+    producto = producto.upper()
+
+    draw_wrapped_text(draw, producto, font_medium, fill=color_texto)
+
+    draw.text((320, 25 + 8), "Precio final al consumidor", fill=color_texto, font=font_small)
+    draw.text((320,   48 + 8), f"${lista_variables[0]}", fill=color_texto, font=font_large)
+    draw.text((320,  109 + 8), f"Precio sin impuestos nacionales (IVA) ${lista_variables[1]}", fill=color_texto, font=font_small)
+
+    if dividir_por_litro_o_kg == "Kilogramos":
+        draw.text((320,  130 + 8), f"Precio al consumidor por kilogramo ${lista_variables[2]}", fill=color_texto, font=font_small)
+    elif dividir_por_litro_o_kg == "Litros":
+        draw.text((320,  130 + 8), f"Precio al consumidor por litro ${lista_variables[2]}", fill=color_texto, font=font_small)    
+
+    # Dibujar borde negro
+    draw.rectangle([0, 0, 719, 299], outline=color_borde_exterior, width=10)
+    # Dibujar borde negro
+    draw.rectangle([10, 10, 709, 289], outline=color_borde_interior, width=2)
+
+    # Cargar imagen de marca de agua (asegurate de que el PNG tenga fondo transparente)
+    marca_agua = Image.open("imgs/CAME_baja-solo.jpg").convert("RGBA")
+    # Redimensionar si hace falta
+    marca_agua = marca_agua.resize((720, 270))  # Ajustá tamaño según prefieras
+
+    # Cambiar transparencia (más baja = más transparente)
+    alpha = 9  # de 0 (invisible) a 255 (opaco)
+    # Separar canales y aplicar nuevo alpha
+    r, g, b, a = marca_agua.split()
+    marca_agua.putalpha(alpha)
+
+    # Posición de la marca de agua (abajo a la derecha, por ejemplo)
+    pos_x = img.width - marca_agua.width - 10
+    pos_y = img.height - marca_agua.height - 10
+
+    # Pegar la marca de agua sobre la imagen principal
+    img.paste(marca_agua, (pos_x, pos_y), marca_agua)
+
+    # if uploaded_logo is not None:
+    #         # Abrir imagen con PIL
+    #         logo = Image.open(uploaded_logo).convert("RGBA")  # Asegura transparencia si es PNG
+
+    #         # Redimensionar (por ejemplo, a 100x100 píxeles)
+    #         nuevo_tamaño = (180, 100)
+    #         logo_redimensionado = logo.resize(nuevo_tamaño)
+    #         img.paste(logo_redimensionado, (30, 175) )
+    
+    # codigo_de_barras = generar_qr(json.dumps({
+    #     "Producto": 123,
+    #     "id": 123,
+    #     "precio": 123
+    #     }, indent=2))
+
+    # if codigo_de_barras:
+    #     # Redimensionar la imagen del código de barras
+    #     img.paste(codigo_de_barras, (580, 170))  # Ajusta posición según tu diseño
+    # Personalización en sidebar
+    # Sidebar para seleccionar el tamaño
+ 
+    escala = st.slider("Tamaño de la etiqueta", min_value=0.1, max_value=3.0, value=1.0, step=0.1)
+
+    # Redimensionar imagen
+    nuevo_ancho = int(img.width * escala)
+    nuevo_alto = int(img.height * escala)
+    img_redimensionada = img.resize((nuevo_ancho, nuevo_alto))
+
+    # Mostrar imagen redimensionada
+    st.image(img_redimensionada, caption=f"Tamaño: {nuevo_ancho} x {nuevo_alto}")
+
+    # Botón para descargar la imagen
+    buf = io.BytesIO()
+    img_redimensionada.save(buf, format="PNG")
+    buf.seek(0)
+    st.download_button(
+        label="Descargar Etiqueta",
+        data=buf,
+        file_name="etiqueta.png",
+        mime="image/png"
+    )
+else:
+    st.warning("Por favor, ingrese un número válido en el campo de Precio Final.")
+
+st.write("---")
+st.write("**Aclaración**")
+st.write("El usuario reconoce y acepta que los datos generados son a título meramente informativo y orientativo. La herramienta no apunta a establecer precios finales para ninguna operación sino brindar, de manera detallada, la información que un comercio puede necesitar para definir, por decisión propia, los precios de los productos y servicios que comercializa. Asimismo, CAME no se responsabiliza por la información brindada por el sistema, su actualización o su falta de disponibilidad.")
+st.markdown("Para mayor información [click aquí](https://www.argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025.pdf)")
+st.write("---")
+
+# Columnas inferiores
+col1, col2, col3 = st.columns([2,2,2])
+
+with col1 :
+    st.write("")
+
+with col2 : 
+    st.image("imgs/CAME-Transparente.png", use_column_width=True)
+    
+with col3 :
+    st.write("")
+
+st.write("---")
+# Titulo para las redes con estilo personalizado
+st.markdown(
+    """
+    <div style="text-align: center; padding: 20px 0; margin-top: 0;">
+        <h1 style="border: 2px solid #004AAD; padding: 10px; font-size: 24px; border-radius: 10px; display: inline-block;">
+            ¡Seguí a CAME en redes sociales!
+        </h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# Columnas para centrar
+col_izq, col_centro, colder = st.columns([0.7,1.8,0.5])
+with col_izq :
+    st.write("")
+
+with col_centro:
+    colFc, colIg, colTw, colLk, colYt = st.columns(5)
+    with colFc:
+        # URL de tu perfil de Instagram
+        facebook_url = "https://www.facebook.com/redcame"
+        # Cargar la imagen del logotipo de Instagram
+        logo_image = "imgs/facebook.png"  # Reemplaza con la ruta de tu imagen
+        # Mostrar el logotipo de Instagram
+        st.image(logo_image, width=32)
+        # Crear un enlace clickeable
+        st.markdown(f"[Facebook]({facebook_url})", unsafe_allow_html=True)
+
+    with colIg:
+        # URL de tu perfil de Instagram
+        instagram_url = "https://www.instagram.com/redcame/"
+        # Cargar la imagen del logotipo de Instagram
+        logo_image = "imgs/ig.png"  # Reemplaza con la ruta de tu imagen
+        # Mostrar el logotipo de Instagram
+        st.image(logo_image, width=32)
+        # Crear un enlace clickeable
+        st.markdown(f"[Instagram]({instagram_url})", unsafe_allow_html=True)
+
+    with colTw:
+        # URL de tu perfil de Instagram
+        twiter_url = "https://twitter.com/redcame"
+        # Cargar la imagen del logotipo de Instagram
+        logo_image = "imgs/twiter.png"  # Reemplaza con la ruta de tu imagen
+        # Mostrar el logotipo de Instagram
+        st.image(logo_image, width=32)
+        # Crear un enlace clickeable
+        st.markdown(f"[Twitter]({twiter_url})", unsafe_allow_html=True)
+
+    with colLk:
+        # URL de tu perfil de Instagram
+        linkedin_url = "https://ar.linkedin.com/company/redcame"
+        # Cargar la imagen del logotipo de Instagram
+        logo_image = "imgs/linkedin.png"  # Reemplaza con la ruta de tu imagen
+        # Mostrar el logotipo de Instagram
+        st.image(logo_image, width=32)
+        # Crear un enlace clickeable
+        st.markdown(f"[LinkedIn]({linkedin_url})", unsafe_allow_html=True) 
+
+    with colYt:
+        # URL de tu perfil de Instagram
+        youtube_url = "https://www.youtube.com/c/CAMEar"
+        # Cargar la imagen del logotipo de Instagram
+        logo_image = "imgs/yutu.png"  # Reemplaza con la ruta de tu imagen
+        # Mostrar el logotipo de Instagram
+        st.image(logo_image, width = 40)
+        # Crear un enlace clickeable
+        st.markdown(f"[Youtube]({youtube_url})", unsafe_allow_html=True)               
+
+with colder :
+    st.write("")
+
+
+# Agrega CSS personalizado para el marcador en la parte inferior
+st.markdown(
+    """
+    <style>
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 5px;
+        text-align: left;
+        font-size: 12px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+# Agrega el marcador
+st.markdown('<div class="footer">Desarrollado por el departamento de <a href="https://www.redcame.org.ar/" target="_blank">Estadísticas y Bases de Datos de CAME</a></div>', unsafe_allow_html=True)
