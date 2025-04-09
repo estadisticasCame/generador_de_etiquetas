@@ -18,6 +18,7 @@ with columna_titulo:
     st.markdown("<h1 style='text-align: left; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
 with columna_logo:
     st.write("")
+    st.write("")
     st.image("imgs/CAME-Transparente.png", use_container_width=True)
     
 st.write("#### De acuerdo a la [resolución 04/2025](https://www.argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025.pdf)")
