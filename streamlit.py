@@ -262,10 +262,10 @@ st.write("---")
 # Titulo para las redes con estilo personalizado
 st.markdown(
     """
-    <div style="text-align: center; padding: 0px 0; margin-top: 0;">
+    <div style="text-align: center; padding: 10px 0; margin-top: 0;">
         <h1 style="
             border: 2px solid #004AAD;
-            padding: 0px 0px;
+            padding: 10px 10px;
             font-size: 24px;
             border-radius: 10px;
             display: inline-block;
