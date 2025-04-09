@@ -253,7 +253,7 @@ with col1 :
     st.write("")
 
 with col2 : 
-    st.image("imgs/CAME-Transparente.png", use_container_width=True)
+    st.image("imgs/LOGO. ESTADÍSTICAS.png", use_container_width=True)
     
 with col3 :
     st.write("")
