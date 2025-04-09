@@ -342,7 +342,7 @@ st.markdown(
         left: 0;
         width: 100%;
         padding: 5px;
-        text-align: left;
+        text-align: center;
         font-size: 12px;
     }
     </style>
