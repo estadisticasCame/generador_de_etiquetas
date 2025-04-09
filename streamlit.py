@@ -1,15 +1,7 @@
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
-import io
-import barcode
-from barcode.writer import ImageWriter
-import streamlit as st
-import barcode
-from barcode.writer import ImageWriter
 from io import BytesIO
-import qrcode
 import io
-import json
 
 # Título de la aplicación
 # Configuramos la página
