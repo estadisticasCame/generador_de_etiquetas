@@ -29,7 +29,7 @@ st.write("#### De acuerdo a la [resolución 04/2025.](https://www.argentina.gob.
 st.write("---")
 
 st.write("Según la Ley N° 23.349 - ley de IVA - las alícuotas se aplican del siguiente modo: ")
-st.write("+ **21% =** Consumo general (electrodomésticos, textiles, alimentos procesados, etc.)")
+st.write("+ **21% =** Consumo general (electrodomésticos, textiles, alimentos procesados, etc.).")
 st.write("+ **10,5% =** Productos agropecuarios, carne, pan, frutas y verduras.")
 st.write("+ **0% =** Libros, folletos, diarios.")
 
