@@ -13,7 +13,15 @@ st.set_page_config(
 # Aplicar estilos de formato CSS para agrandar el título
 st.markdown("<h1 style='text-align: center; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
 
-st.write("## De acuerdo a la resolución 04/2025")
+columna_centrar1, columna_centrar2, columna_centrar3 = st.columns([1,2,1])
+with columna_centrar1:
+    st.write("")
+with columna_centrar2:
+    st.write("#### De acuerdo a la resolución 04/2025")
+with columna_centrar3:
+    st.write("")
+    
+
 
 st.write("---")
 
