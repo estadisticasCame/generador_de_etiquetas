@@ -28,10 +28,10 @@ st.write("#### De acuerdo a la [resolución 04/2025](https://www.argentina.gob.a
 
 st.write("---")
 
-st.write("Según la Ley N° 23.349 - ley de IVA - las alicuotas se aplican del siguiente modo: ")
-st.write("+ **21%=** Consumo general (Electrodomesticos, textiles, alimentos procesados, etc")
-st.write("+ **10,5%=** Productos agropecuarios, carne, pan, frutas y verduras")
-st.write("+ **0%=** Libros, folletos, diarios")
+st.write("Según la Ley N° 23.349 - ley de IVA - las alícuotas se aplican del siguiente modo: ")
+st.write("+ **21% =** Consumo general (Electrodomésticos, textiles, alimentos procesados, etc)")
+st.write("+ **10,5% =** Productos agropecuarios, carne, pan, frutas y verduras")
+st.write("+ **0% =** Libros, folletos, diarios")
 
 st.write("---")
 def draw_wrapped_text(draw= None, text= None, font= None, max_width = 235, x = 30, y = 25+8, fill = None):
