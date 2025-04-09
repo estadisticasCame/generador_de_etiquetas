@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import io
+import base64
 
 # Título de la aplicación
 # Configuramos la página
