@@ -263,7 +263,14 @@ st.write("---")
 st.markdown(
     """
     <div style="text-align: center; padding: 20px 0; margin-top: 0;">
-        <h1 style="border: 2px solid #004AAD; padding: 10px; font-size: 24px; border-radius: 10px; display: inline-block;">
+        <h1 style="
+            border: 2px solid #004AAD;
+            padding: 10px 20px;
+            font-size: 24px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 0 auto;
+        ">
             ¡Seguí a CAME en redes sociales!
         </h1>
     </div>
@@ -342,7 +349,7 @@ st.markdown(
         left: 0;
         width: 100%;
         padding: 5px;
-        text-align: center;
+        text-align: left;
         font-size: 12px;
     }
     </style>
