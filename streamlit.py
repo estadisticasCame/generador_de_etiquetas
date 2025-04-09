@@ -20,10 +20,10 @@ st.write("#### De acuerdo a la [resolución 04/2025](https://www.argentina.gob.a
 
 st.write("---")
 
-
-st.write("+ Si usted comercializa productos de consumo general (electrodomésticos, ropa, alimentos procesados, etc.), le corresponde el **21% de IVA**.")
-st.write("+ Si comercializa productos agropecuarios, carnes frescas, pan o frutas y verduras sin procesar, le corresponde el **10,5% de IVA.**")
-st.write("+ Ciertos productos, como libros, folletos, diarios, están exentos de IVA")
+st.write("Según la Ley N° 23.349 - ley de IVA - las alicuotas se aplican del siguiente modo: ")
+st.write("+ **21% **= Consumo general (Electrodomesticos, textiles, alimentos procesados, etc")
+st.write("+ **10,5% =** Productos agropecuarios, carne, pan, frutas y verduras")
+st.write("+ **0%= ** Libros, folletos, diarios")
 
 st.write("---")
 def draw_wrapped_text(draw= None, text= None, font= None, max_width = 235, x = 30, y = 25+8, fill = None):
