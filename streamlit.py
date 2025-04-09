@@ -13,7 +13,7 @@ st.set_page_config(
 # Aplicar estilos de formato CSS para agrandar el título
 st.markdown("<h1 style='text-align: left; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
 
-st.write("#### De acuerdo a la resolución 04/2025")
+st.write("#### De acuerdo a la [resolución 04/2025](https://www.argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025.pdf)")
 
     
 
@@ -21,7 +21,6 @@ st.write("#### De acuerdo a la resolución 04/2025")
 st.write("---")
 
 
-st.write("De acuerdo a la [resolución 4/2025](https://www.argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025.pdf)")
 st.write("+ Si usted comercializa productos de consumo general (electrodomésticos, ropa, alimentos procesados, etc.), le corresponde el **21% de IVA**.")
 st.write("+ Si comercializa productos agropecuarios, carnes frescas, pan o frutas y verduras sin procesar, le corresponde el **10,5% de IVA.**")
 st.write("+ Ciertos productos, como libros, folletos, diarios, están exentos de IVA")
