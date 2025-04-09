@@ -145,9 +145,9 @@ if precio_valido:
     draw.rectangle([0, 190, 720, 300], fill=color_fondo_inferior)
 
     # Fuentes
-    font_large = ImageFont.truetype("arial.ttf", 45)
-    font_medium = ImageFont.truetype("arial.ttf", 24)
-    font_small = ImageFont.truetype("arial.ttf", 16)
+    font_large = ImageFont.truetype("Fuentes/Inter/Inter-Medium.ttf", 45)
+    font_medium = ImageFont.truetype("Fuentes/Inter/Inter-Medium.ttf", 24)
+    font_small = ImageFont.truetype("Fuentes/Inter/Inter-Medium.ttf", 16)
     
     # Dibujar texto
     producto = producto.upper()
