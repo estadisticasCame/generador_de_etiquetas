@@ -11,9 +11,9 @@ st.set_page_config(
     )
 
 # Aplicar estilos de formato CSS para agrandar el título
-st.markdown("<h1 style='text-align: center; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas de acuerdo a la resolución 4/2025</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; font-size: 54px; font-family: Verdana, sans-serif;'>Generador de etiquetas</h1>", unsafe_allow_html=True)
 
-
+st.write("## De acuerdo a la resolución 04/2025")
 
 st.write("---")
 
