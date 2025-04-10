@@ -4,6 +4,7 @@ from io import BytesIO
 import io
 import datetime
 import time
+import pytz
 
 # Título de la aplicación
 # Configuramos la página
