@@ -228,17 +228,8 @@ if precio_valido and provincia_seleccionada != "-":
         lista_variables[i] = lista_variables[i].replace(" ",".")
 
     # Crear imagen
-    # Crear imagen base (más grande para que quepa la sombra)
-    img_sombra = Image.new("RGB", (730, 310), color=(200, 200, 200))  # Sombra gris clara
-    
-    # Crear imagen principal
     img = Image.new("RGB", (720, 300), color=color_fondo_superior)
-    
-    # Pegamos la imagen con una pequeña diferencia de posición (sombra en la esquina inferior derecha)
-    img_sombra.paste(img, (5, 5))  # Desfase de 5px hacia abajo y derecha
-    
-    draw = ImageDraw.Draw(img)  # Continuar con img como antes...
-
+    draw = ImageDraw.Draw(img)
 
     # Dibujar fondo inferior
     draw.rectangle([0, 190, 720, 300], fill=color_fondo_inferior)
