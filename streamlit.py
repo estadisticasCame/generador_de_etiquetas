@@ -2,7 +2,8 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import io
-
+import datetime
+import time
 
 # Título de la aplicación
 # Configuramos la página
@@ -10,6 +11,78 @@ st.set_page_config(
     page_title="Generador de Etiquetas",
     page_icon="imgs/CAME-Transparente.ico.ico",
     )
+
+# Configura el repositorio de GitHub y el archivo CSV
+github_token = st.secrets["TOKEN"]
+repo_name = st.secrets["REPO"]
+
+# Creamos la función para agregar datos    
+def calificacion(fecha_actual, hora_actual, evaluation):
+    # Configura el repositorio de GitHub y el archivo CSV
+    file_path = st.secrets["ARCHIVO_CALIFICACION"]  
+    g = Github(github_token)
+    repo = g.get_repo(repo_name)
+    contents = repo.get_contents(file_path)
+    # Create a file-like object from the decoded content
+    content_bytes = contents.decoded_content
+    content_file = io.BytesIO(content_bytes)
+    # Read the CSV from the file-like object
+    df = pd.read_csv(content_file)
+
+    # Espera de 1 segundo
+    time.sleep(0.5) 
+
+    # Create a DataFrame with the new data
+    new_data = pd.DataFrame({
+        'Fecha': [fecha_actual],
+        'Hora': [hora_actual],
+        'Evaluación': [evaluation],
+    })
+    # Append the new DataFrame to the existing DataFrame
+    df = pd.concat([df, new_data], ignore_index=True)
+    # Save the updated DataFrame back to the file-like object
+    content_file.seek(0)  # Reset the file position to the beginning
+    df.to_csv(content_file, index=False)
+
+    # Espera de 1 segundo
+    time.sleep(0.5) 
+
+    # Update the file in the repository with the modified content
+    repo.update_file(contents.path, "Actualizado el archivo CSV", content_file.getvalue(), contents.sha)   
+    
+# Creamos la función para agregar datos    
+def provincia(fecha_actual, hora_actual, provincia):
+    # Configura el repositorio de GitHub y el archivo CSV
+    file_path = st.secrets["ARCHIVO_PROVINCIAS "]  
+    g = Github(github_token)
+    repo = g.get_repo(repo_name)
+    contents = repo.get_contents(file_path)
+    # Create a file-like object from the decoded content
+    content_bytes = contents.decoded_content
+    content_file = io.BytesIO(content_bytes)
+    # Read the CSV from the file-like object
+    df = pd.read_csv(content_file)
+
+    # Espera de 1 segundo
+    time.sleep(0.5) 
+
+    # Create a DataFrame with the new data
+    new_data = pd.DataFrame({
+        'Fecha': [fecha_actual],
+        'Hora': [hora_actual],
+        'Provincia': [provincia],
+    })
+    # Append the new DataFrame to the existing DataFrame
+    df = pd.concat([df, new_data], ignore_index=True)
+    # Save the updated DataFrame back to the file-like object
+    content_file.seek(0)  # Reset the file position to the beginning
+    df.to_csv(content_file, index=False)
+
+    # Espera de 1 segundo
+    time.sleep(0.5) 
+
+    # Update the file in the repository with the modified content
+    repo.update_file(contents.path, "Actualizado el archivo CSV", content_file.getvalue(), contents.sha)    
 
 
 columna_titulo, columna_logo = st.columns([2,1])
@@ -58,35 +131,39 @@ def draw_wrapped_text(draw= None, text= None, font= None, max_width = 235, x = 3
         line_height = bbox[3] - bbox[1]
         draw.text((x, y + i * (line_height + 9)), l, font=font, fill=fill)
 
-# def generar_qr(texto, tamanio=(110, 110)):
-#         # Crear código QR
-#         qr = qrcode.QRCode(
-#             version=1,
-#             error_correction=qrcode.constants.ERROR_CORRECT_L,
-#             box_size=10,
-#             border=4,
-#         )
-#         qr.add_data(texto)
-#         qr.make(fit=True)
-        
-#         # Guardar en un buffer
-#         img = qr.make_image(fill_color="black", back_color="white",background=None)    
-#         buffer = io.BytesIO()
-#         img.save(buffer, format="PNG")
-#         buffer.seek(0)
-        
-#         # Redimensionar y retornar imagen PIL
-#         imagen = Image.open(buffer)
-#         imagen = imagen.resize(tamanio)
-#         return imagen
-
-
-# Personalización en sidebar
-# with st.sidebar:
-#     st.header("Configuración de tamaño")
-#     tamaño = st.slider("Tamaño", 1, 5, 1)
 
 # Entrada de precio final y selección de IVA
+# listado de provincias
+provincias = [
+    "-",
+    "Buenos Aires",
+    "CABA",
+    "Catamarca",
+    "Chaco",
+    "Chubut",
+    "Córdoba",
+    "Corrientes",
+    "Entre Ríos",
+    "Formosa",
+    "Jujuy",
+    "La Pampa",
+    "La Rioja",
+    "Mendoza",
+    "Misiones",
+    "Neuquén",
+    "Río Negro",
+    "Salta",
+    "San Juan",
+    "San Luis",
+    "Santa Cruz",
+    "Santa Fe",
+    "Santiago del Estero",
+    "Tierra del Fuego",
+    "Tucumán"
+]
+
+# Seleccionar provincia
+provincia_seleccionada = st.selectbox("Seleccione su provincia",provincias) 
 col1, col2 = st.columns([2, 1])
 with col1:
     producto = st.text_input("Producto", "")
@@ -110,7 +187,7 @@ except ValueError:
 
 st.write("---")
 # Mostrar preview de la imagen si el precio es válido
-if precio_valido:
+if precio_valido and provincia_seleccionada != "-":
     color1,color2,color3,color4,color5 = st.columns(5)
     # Configuración de colores
     with color1:
@@ -231,14 +308,72 @@ if precio_valido:
     buf = io.BytesIO()
     img_redimensionada.save(buf, format="PNG")
     buf.seek(0)
-    st.download_button(
+     
+     if st.download_button(
         label="Descargar Etiqueta",
         data=buf,
         file_name="etiqueta.png",
         mime="image/png"
-    )
+        ):
+        # Establecer la zona horaria a Buenos Aires
+        zona_horaria = pytz.timezone('America/Argentina/Buenos_Aires')
+    
+        # Obtener la fecha y hora actual en la zona horaria especificada
+        fecha_hora_actual = datetime.datetime.now(zona_horaria)
+    
+        # Obtener la fecha en formato dd/mm/aa
+        fecha_actual = fecha_hora_actual.strftime("%d/%m/%y")
+    
+        # Obtener la hora en formato hh:mm:ss
+        hora_actual = fecha_hora_actual.strftime("%H:%M:%S")
+        # Agregar st.write para verificar el valor de evaluation
+        try:
+            provincia(fecha_actual, hora_actual, provincia_seleccionada)
+        # Si salta error, esperar dos segundos y volver a cargar    
+        except github.GithubException:
+            try:
+                time.sleep(2)
+                provincia(fecha_actual, hora_actual, provincia_seleccionada)
+            except github.GithubException:
+                pass
+    else: pass
+
+    
+    
+    # FORMULARIO DE CALIFICACIÓN
+    with st.form(key='calificacion usuario'):
+        # Evaluación       
+        evaluation = st.radio("¿Cómo calificaría el funcionamiento de la calculadora?", ["Excelente", "Buena", "Regular", "Mala", "Muy mala"],horizontal=True)
+        # Botón de calificación
+        submit_button = st.form_submit_button(label='Enviar')
+        # Verificar si el formulario se ha enviado
+        if submit_button:
+             # Establecer la zona horaria a Buenos Aires
+            zona_horaria = pytz.timezone('America/Argentina/Buenos_Aires')
+        
+            # Obtener la fecha y hora actual en la zona horaria especificada
+            fecha_hora_actual = datetime.datetime.now(zona_horaria)
+        
+            # Obtener la fecha en formato dd/mm/aa
+            fecha_actual = fecha_hora_actual.strftime("%d/%m/%y")
+        
+            # Obtener la hora en formato hh:mm:ss
+            hora_actual = fecha_hora_actual.strftime("%H:%M:%S")
+            # Agregar st.write para verificar el valor de evaluation
+        
+            try:
+                calificacion(fecha_actual, hora_actual, evaluation)
+                st.success("Calificación enviada exitosamente!")
+            # Si salta error, esperar dos segundos y volver a cargar    
+            except github.GithubException:
+                try:
+                    time.sleep(2)
+                    calificacion(fecha_actual, hora_actual, evaluation)
+                    st.success("Calificación enviada exitosamente!")
+                except github.GithubException:
+                    pass
 else:
-    st.warning("Por favor, ingrese un número válido en el campo de Precio Final.")
+    st.warning("Por favor, seleccione su provincia y ingrese un número válido en el campo de Precio Final.")
 
 st.write("---")
 st.write("**Aclaración**")
