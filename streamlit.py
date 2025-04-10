@@ -6,6 +6,7 @@ import datetime
 import time
 import pytz
 from github import Github
+import github
 
 # Título de la aplicación
 # Configuramos la página
