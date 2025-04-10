@@ -309,7 +309,7 @@ if precio_valido and provincia_seleccionada != "-":
     img_redimensionada.save(buf, format="PNG")
     buf.seek(0)
      
-     if st.download_button(
+    if st.download_button(
         label="Descargar Etiqueta",
         data=buf,
         file_name="etiqueta.png",
