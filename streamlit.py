@@ -56,7 +56,7 @@ def calificacion(fecha_actual, hora_actual, evaluation):
 # Creamos la función para agregar datos    
 def provincia(fecha_actual, hora_actual, provincia):
     # Configura el repositorio de GitHub y el archivo CSV
-    file_path = st.secrets["ARCHIVO_PROVINCIAS "]  
+    file_path = st.secrets["ARCHIVO_PROVINCIAS"]  
     g = Github(github_token)
     repo = g.get_repo(repo_name)
     contents = repo.get_contents(file_path)
