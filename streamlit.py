@@ -10,7 +10,6 @@ import github
 import pandas as pd
 
 # Título de la aplicación
-# Configuramos la página
 st.set_page_config(
     page_title="Generador de Etiquetas",
     page_icon="imgs/CAME-Transparente.ico.ico",
@@ -229,8 +228,17 @@ if precio_valido and provincia_seleccionada != "-":
         lista_variables[i] = lista_variables[i].replace(" ",".")
 
     # Crear imagen
+    # Crear imagen base (más grande para que quepa la sombra)
+    img_sombra = Image.new("RGB", (730, 310), color=(200, 200, 200))  # Sombra gris clara
+    
+    # Crear imagen principal
     img = Image.new("RGB", (720, 300), color=color_fondo_superior)
-    draw = ImageDraw.Draw(img)
+    
+    # Pegamos la imagen con una pequeña diferencia de posición (sombra en la esquina inferior derecha)
+    img_sombra.paste(img, (5, 5))  # Desfase de 5px hacia abajo y derecha
+    
+    draw = ImageDraw.Draw(img)  # Continuar con img como antes...
+
 
     # Dibujar fondo inferior
     draw.rectangle([0, 190, 720, 300], fill=color_fondo_inferior)
@@ -276,27 +284,6 @@ if precio_valido and provincia_seleccionada != "-":
 
     # Pegar la marca de agua sobre la imagen principal
     img.paste(marca_agua, (pos_x, pos_y), marca_agua)
-
-    # if uploaded_logo is not None:
-    #         # Abrir imagen con PIL
-    #         logo = Image.open(uploaded_logo).convert("RGBA")  # Asegura transparencia si es PNG
-
-    #         # Redimensionar (por ejemplo, a 100x100 píxeles)
-    #         nuevo_tamaño = (180, 100)
-    #         logo_redimensionado = logo.resize(nuevo_tamaño)
-    #         img.paste(logo_redimensionado, (30, 175) )
-    
-    # codigo_de_barras = generar_qr(json.dumps({
-    #     "Producto": 123,
-    #     "id": 123,
-    #     "precio": 123
-    #     }, indent=2))
-
-    # if codigo_de_barras:
-    #     # Redimensionar la imagen del código de barras
-    #     img.paste(codigo_de_barras, (580, 170))  # Ajusta posición según tu diseño
-    # Personalización en sidebar
-    # Sidebar para seleccionar el tamaño
  
     escala = st.slider("Tamaño de la etiqueta", min_value=0.1, max_value=3.0, value=1.0, step=0.1)
 
@@ -342,7 +329,6 @@ if precio_valido and provincia_seleccionada != "-":
                 pass
     else: pass
 
-    
     
     # FORMULARIO DE CALIFICACIÓN
     with st.form(key='calificacion usuario'):
