@@ -7,6 +7,7 @@ import time
 import pytz
 from github import Github
 import github
+import pandas as pd
 
 # Título de la aplicación
 # Configuramos la página
